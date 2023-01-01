@@ -1,31 +1,36 @@
-import { getPossibleMatches, isSinglishQuery } from './singlish.js'
+import { convert, convertMixed, Script } from './index.js'
 
-describe('Singlish Query', () => {
-    test('nirvana is a singlish query', () => {
-      expect(isSinglishQuery('nirvana')).toBe(true);
-      expect(isSinglishQuery('නිර්වාන')).toBe(false);
-      expect(isSinglishQuery('නිර්වානnir')).toBe(true);
+const roSentence = 'Evaṃ me sutaṃ – ekaṃ samayaṃ bhagavā antarā ca rājagahaṃ antarā ca nāḷandaṃ addhānamaggappaṭipanno hoti mahatā bhikkhusaṅghena saddhiṃ pañcamattehi bhikkhusatehi.',
+    thaiSentence = 'เอวํ เม สุตํ – เอกํ สมยํ ภควา อนฺตรา จ ราชคหํ อนฺตรา จ นาฬนฺทํ อทฺธานมคฺคปฺปฏิปนฺโน โหติ มหตา ภิกฺขุสงฺเฆน สทฺธึ ปฺจมตฺเตหิ ภิกฺขุสเตหิ.',
+    mySentence = 'ဧဝံ မေ သုတံ – ဧကံ သမယံ ဘဂဝါ အန္တရာ စ ရာဇဂဟံ အန္တရာ စ နာဠန္ဒံ အဒ္ဓါနမဂ္ဂပ္ပဋိပန္နော ဟောတိ မဟတာ ဘိက္ခုသင်္ဃေန သဒ္ဓိံ ပဉ္စမတ္တေဟိ ဘိက္ခုသတေဟိ.',
+    siSentence = 'එවං මෙ සුතං – එකං සමයං භගවා අන්තරා ච රාජගහං අන්තරා ච නාළන්දං අද්ධානමග්ගප්පටිපන්නො හොති මහතා භික්ඛුසඞ්ඝෙන සද්ධිං පඤ්චමත්තෙහි භික්ඛුසතෙහි.',
+    mixedSentence = 'එවං මෙ සුතං – ဧကံ သမယံ ဘဂဝါ အန္တရာ စ ရာဇဂဟံ အန္တရာ စ นาฬนฺทํ อทฺธานมคฺคปฺปฏิปนฺโน โหติ มหตา ภิกฺขุสงฺเฆน สทฺธึ pañcamattehi bhikkhusatehi.'
+
+describe('single word', () => {
+    test('nirvana', () => {
+      expect(convert('janaka', Script.SI, Script.RO)).toEqual('ජනක')
+      expect(convertMixed('janaka', Script.SI)).toEqual('ජනක')
+      expect(convert('නිර්වාන', Script.RO, Script.SI)).toEqual('Nirvāna')
+      expect(convertMixed('නිර්වාන', Script.RO)).toEqual('Nirvāna')
     });
 })
 
-describe('get matches', () => {
-    const nirvanaMatches = [
-        'ඤිර්වඤ',   'ණිර්වඤ',   'නිර්වඤ',   'ඤීර්වඤ',   'ණීර්වඤ',
-        'නීර්වඤ',   'ඤිර්වාඤ',  'ණිර්වාඤ',  'නිර්වාඤ',  'ඤීර්වාඤ',
-        'ණීර්වාඤ',  'නීර්වාඤ',  'ඤිර්වණ',   'ණිර්වණ',   'නිර්වණ',
-        'ඤීර්වණ',   'ණීර්වණ',   'නීර්වණ',   'ඤිර්වාණ',  'ණිර්වාණ',
-        'නිර්වාණ',  'ඤීර්වාණ',  'ණීර්වාණ',  'නීර්වාණ',  'ඤිර්වන',
-        'ණිර්වන',   'නිර්වන',   'ඤීර්වන',   'ණීර්වන',   'නීර්වන',
-        'ඤිර්වාන',  'ණිර්වාන',  'නිර්වාන',  'ඤීර්වාන',  'ණීර්වාන',
-        'නීර්වාන',  'ඤිර්වඤා',  'ණිර්වඤා',  'නිර්වඤා',  'ඤීර්වඤා',
-        'ණීර්වඤා',  'නීර්වඤා',  'ඤිර්වාඤා', 'ණිර්වාඤා', 'නිර්වාඤා',
-        'ඤීර්වාඤා', 'ණීර්වාඤා', 'නීර්වාඤා', 'ඤිර්වණා',  'ණිර්වණා',
-        'නිර්වණා',  'ඤීර්වණා',  'ණීර්වණා',  'නීර්වණා',  'ඤිර්වාණා',
-        'ණිර්වාණා', 'නිර්වාණා', 'ඤීර්වාණා', 'ණීර්වාණා', 'නීර්වාණා',
-        'ඤිර්වනා',  'ණිර්වනා',  'නිර්වනා',  'ඤීර්වනා',  'ණීර්වනා',
-        'නීර්වනා',  'ඤිර්වානා', 'ණිර්වානා', 'නිර්වානා', 'ඤීර්වානා',
-        'ණීර්වානා', 'නීර්වානා'].sort() // sort in case out of order
-    test('nirvana', () => {
-        expect(getPossibleMatches('nirvana').sort()).toEqual(nirvanaMatches);
-    });
+describe('sentence', () => {
+    test('evam me sutam', () => {
+        expect(convert(roSentence, Script.THAI, Script.RO)).toEqual(thaiSentence)
+        expect(convertMixed(roSentence, Script.THAI)).toEqual(thaiSentence)
+        expect(convert(thaiSentence, Script.MY, Script.THAI)).toEqual(mySentence)
+        expect(convertMixed(thaiSentence, Script.MY)).toEqual(mySentence)
+        expect(convert(mySentence, Script.SI, Script.MY)).toEqual(siSentence)
+        expect(convertMixed(mySentence, Script.SI)).toEqual(siSentence)
+    })
+})
+
+describe('mixed', () => {
+    test('mixed evam me sutam', () => {
+        expect(convertMixed(mixedSentence, Script.THAI)).toEqual(thaiSentence)
+        expect(convertMixed(mixedSentence, Script.RO)).toEqual(roSentence)
+        expect(convertMixed(mixedSentence, Script.MY)).toEqual(mySentence)
+        expect(convertMixed(mixedSentence, Script.SI)).toEqual(siSentence)
+    })
 })
