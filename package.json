@@ -1,0 +1,28 @@
+{
+  "name": "@pnfo/pali-converter",
+  "version": "1.0.0",
+  "description": "convert pali content from one script to another",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pnfo/pali-converter.git"
+  },
+  "keywords": [
+    "pali",
+    "script",
+    "converter",
+    "roman",
+    "sinhala",
+    "burmese",
+    "thai"
+  ],
+  "author": "pathnirvana",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pnfo/pali-converter/issues"
+  },
+  "homepage": "https://github.com/pnfo/pali-converter#readme"
+}
