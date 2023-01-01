@@ -3,8 +3,6 @@
  * The code and character mapping defined in this file can not be used for any commercial purposes.
  * Permission from the auther is required for all other purposes.
  * Edit 2021 - added (non pali) sanskrit consonents and vowels
- * 
- * USAGE: check the comments on convert and convertMixed functions at the bottom of the file
  */
 
 "use strict";
