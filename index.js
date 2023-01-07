@@ -240,7 +240,7 @@ function beautify_common(text, script, rendType = '') {
     return text;
 }
 // for roman text only
-function capitalize(text, script, rendType = '') {
+function capitalize(text, script) {
     // the adding of <w> tags around the words before the beautification makes it harder - (?:<w>)? added
     text = text.replace(/^((?:<w>)?\S)/g, (_1, p1) => { // begining of a line
         return p1.toUpperCase();
@@ -254,7 +254,7 @@ function capitalize(text, script, rendType = '') {
 }
 const un_capitalize = (text) => text.toLowerCase();
 // for thai text - this can also be done in the convert stage
-function swap_e_o(text, script, rendType = '') { 
+function swap_e_o(text, script) { 
     if (script == Script.THAI) {
         return text.replace(/([ก-ฮ])([เโ])/g, '$2$1'); 
     } else if (script == Script.LAOS) {
@@ -471,7 +471,8 @@ export class TextProcessor {
         return text
     }
     // from Sinhala to other script
-    static convert(text, script) {
+    static convert(text, script, options = {}) {
+        if (options.checkRomanConvert) checkRomanConvert(text)
         text = this.basicConvert(text, script);
         return this.beautify(text, script);
     }
@@ -504,9 +505,9 @@ export class TextProcessor {
  * e.g. convert to Sinhala from Roman 
  * convert('janaka', Script.SI, Script.RO) 
  */
-export function convert(text, toScript, fromScript) {
+export function convert(text, toScript, fromScript, options = {}) {
     text = TextProcessor.convertFrom(text, fromScript) // convert to sinh
-    return TextProcessor.convert(text, toScript) // from sinh
+    return TextProcessor.convert(text, toScript, options) // from sinh
 }
 
 /** 
@@ -514,13 +515,28 @@ export function convert(text, toScript, fromScript) {
  * e.g. convert to Sinhala from multiple scripts (Roman and Myanmar) 
  * convert('janakaဗမာစာ', Script.SI) 
  */
-export function convertMixed(mixedText, toScript) {
+export function convertMixed(mixedText, toScript, options = {}) {
     let text = TextProcessor.convertFromMixed(mixedText) // convert to sinh
-    return TextProcessor.convert(text, toScript)
+    return TextProcessor.convert(text, toScript, options)
 }
 
 
+// occurances of the following patterns in Pali text would result in ambiguity in Roman text
+const alPlusIndeptVowel = /\u0dca[අ-ඔ]/g, // ka = ක්අ = ක
+    aspiratedHalPlusH = /[කගචපජබතදටඩ]\u0dcaහ්/g // dh = ද්හ් = ධ් for 10 aspirated consos
 
+export function checkRomanConvert(text) {
+    let hasErrors = false
+    if (alPlusIndeptVowel.test(text)) {
+        console.log(`al + indeptVowel occurs in ${text}`)
+        hasErrors = true
+    }
+    if (aspiratedHalPlusH.test(text)) {
+        console.log(`aspirated al + h occurs in ${text}`)
+        hasErrors = true
+    }
+    return hasErrors
+}
 
 
 // for es6 - browser

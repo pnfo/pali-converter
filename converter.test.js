@@ -1,4 +1,4 @@
-import { convert, convertMixed, Script } from './index.js'
+import { checkRomanConvert, convert, convertMixed, Script } from './index.js'
 
 const roSentence = 'Evaṃ me sutaṃ – ekaṃ samayaṃ bhagavā antarā ca rājagahaṃ antarā ca nāḷandaṃ addhānamaggappaṭipanno hoti mahatā bhikkhusaṅghena saddhiṃ pañcamattehi bhikkhusatehi.',
     thaiSentence = 'เอวํ เม สุตํ – เอกํ สมยํ ภควา อนฺตรา จ ราชคหํ อนฺตรา จ นาฬนฺทํ อทฺธานมคฺคปฺปฏิปนฺโน โหติ มหตา ภิกฺขุสงฺเฆน สทฺธึ ปฺจมตฺเตหิ ภิกฺขุสเตหิ.',
@@ -32,5 +32,22 @@ describe('mixed', () => {
         expect(convertMixed(mixedSentence, Script.RO)).toEqual(roSentence)
         expect(convertMixed(mixedSentence, Script.MY)).toEqual(mySentence)
         expect(convertMixed(mixedSentence, Script.SI)).toEqual(siSentence)
+    })
+})
+
+describe('checkRomanConvert', () => {
+    test('alPlusIndeptVowel', () => {
+        expect(checkRomanConvert('සල්උයනෙ')).toBeTruthy() // sinhala word with al+indeptvowel
+        expect(checkRomanConvert('සල් උයනෙ')).toBeFalsy() // normal
+        expect(convert('සල්උයනෙ', Script.RO, Script.SI, {'checkRomanConvert' : true}))
+            .toEqual('Saluyane')
+        expect(convert('Saluyane', Script.SI, Script.RO)).toEqual('සලුයනෙ') // note we are getting a different word
+    })
+    test('aspiratedHalPlusH', () => {
+        expect(checkRomanConvert('‘සරියබ්ර්හ්මි')).toBeFalsy() // ra not aspirated 
+        expect(checkRomanConvert('‘සරියබ්ක්හ්මි')).toBeTruthy() // ka is aspirated
+        expect(convert('‘සරියබ්ක්හ්මි', Script.RO, Script.SI, {'checkRomanConvert' : true}))
+            .toEqual('‘Sariyabkhmi')
+        expect(convert('‘Sariyabkhmi', Script.SI, Script.RO)).toEqual('‘සරියබ්ඛ්මි') // note we are getting a different word
     })
 })
