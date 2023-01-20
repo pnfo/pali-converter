@@ -474,6 +474,7 @@ export class TextProcessor {
     static convert(text, script, options = {}) {
         if (options.checkRomanConvert) checkRomanConvert(text)
         text = this.basicConvert(text, script);
+        if (options.checkUnconverted) checkUnconverted(text)
         return this.beautify(text, script);
     }
     // from other script to Sinhala - one script
@@ -536,6 +537,14 @@ export function checkRomanConvert(text) {
         hasErrors = true
     }
     return hasErrors
+}
+
+export function checkUnconverted(text) {
+    if (/[\u0D80-\u0DFF]/g.test(text)) {
+        console.log(`unconverted sinhala letters found in ${text}`)
+        return true
+    }
+    return false
 }
 
 

@@ -1,4 +1,4 @@
-import { checkRomanConvert, convert, convertMixed, Script } from './index.js'
+import { checkRomanConvert, checkUnconverted, convert, convertMixed, Script } from './index.js'
 
 const roSentence = 'Evaṃ me sutaṃ – ekaṃ samayaṃ bhagavā antarā ca rājagahaṃ antarā ca nāḷandaṃ addhānamaggappaṭipanno hoti mahatā bhikkhusaṅghena saddhiṃ pañcamattehi bhikkhusatehi.',
     thaiSentence = 'เอวํ เม สุตํ – เอกํ สมยํ ภควา อนฺตรา จ ราชคหํ อนฺตรา จ นาฬนฺทํ อทฺธานมคฺคปฺปฏิปนฺโน โหติ มหตา ภิกฺขุสงฺเฆน สทฺธึ ปฺจมตฺเตหิ ภิกฺขุสเตหิ.',
@@ -49,5 +49,12 @@ describe('checkRomanConvert', () => {
         expect(convert('‘සරියබ්ක්හ්මි', Script.RO, Script.SI, {'checkRomanConvert' : true}))
             .toEqual('‘Sariyabkhmi')
         expect(convert('‘Sariyabkhmi', Script.SI, Script.RO)).toEqual('‘සරියබ්ඛ්මි') // note we are getting a different word
+    })
+})
+
+describe('checkUnconverted', () => {
+    test('function', () => {
+        expect(checkUnconverted(convert('ඇලුම්ඇති', Script.RO, Script.SI))).toBeTruthy() // has non pali vowels which will not be converted
+        expect(checkUnconverted(convert('පස්දෙනෙක්', Script.RO, Script.SI))).toBeFalsy()
     })
 })
