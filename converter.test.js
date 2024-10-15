@@ -8,30 +8,30 @@ const roSentence = 'Evaṃ me sutaṃ – ekaṃ samayaṃ bhagavā antarā ca r
 
 describe('single word', () => {
     test('nirvana', () => {
-      expect(convert('janaka', Script.SI, Script.RO)).toEqual('ජනක')
-      expect(convertMixed('janaka', Script.SI)).toEqual('ජනක')
-      expect(convert('නිර්වාන', Script.RO, Script.SI)).toEqual('Nirvāna')
-      expect(convertMixed('නිර්වාන', Script.RO)).toEqual('Nirvāna')
+      expect(convert('janaka', Script.SINH, Script.LATN)).toEqual('ජනක')
+      expect(convertMixed('janaka', Script.SINH)).toEqual('ජනක')
+      expect(convert('නිර්වාන', Script.LATN, Script.SINH)).toEqual('Nirvāna')
+      expect(convertMixed('නිර්වාන', Script.LATN)).toEqual('Nirvāna')
     });
 })
 
 describe('sentence', () => {
     test('evam me sutam', () => {
-        expect(convert(roSentence, Script.THAI, Script.RO)).toEqual(thaiSentence)
+        expect(convert(roSentence, Script.THAI, Script.LATN)).toEqual(thaiSentence)
         expect(convertMixed(roSentence, Script.THAI)).toEqual(thaiSentence)
-        expect(convert(thaiSentence, Script.MY, Script.THAI)).toEqual(mySentence)
-        expect(convertMixed(thaiSentence, Script.MY)).toEqual(mySentence)
-        expect(convert(mySentence, Script.SI, Script.MY)).toEqual(siSentence)
-        expect(convertMixed(mySentence, Script.SI)).toEqual(siSentence)
+        expect(convert(thaiSentence, Script.MYMR, Script.THAI)).toEqual(mySentence)
+        expect(convertMixed(thaiSentence, Script.MYMR)).toEqual(mySentence)
+        expect(convert(mySentence, Script.SINH, Script.MYMR)).toEqual(siSentence)
+        expect(convertMixed(mySentence, Script.SINH)).toEqual(siSentence)
     })
 })
 
 describe('mixed', () => {
     test('mixed evam me sutam', () => {
         expect(convertMixed(mixedSentence, Script.THAI)).toEqual(thaiSentence)
-        expect(convertMixed(mixedSentence, Script.RO)).toEqual(roSentence)
-        expect(convertMixed(mixedSentence, Script.MY)).toEqual(mySentence)
-        expect(convertMixed(mixedSentence, Script.SI)).toEqual(siSentence)
+        expect(convertMixed(mixedSentence, Script.LATN)).toEqual(roSentence)
+        expect(convertMixed(mixedSentence, Script.MYMR)).toEqual(mySentence)
+        expect(convertMixed(mixedSentence, Script.SINH)).toEqual(siSentence)
     })
 })
 
@@ -39,22 +39,22 @@ describe('checkRomanConvert', () => {
     test('alPlusIndeptVowel', () => {
         expect(checkRomanConvert('සල්උයනෙ')).toBeTruthy() // sinhala word with al+indeptvowel
         expect(checkRomanConvert('සල් උයනෙ')).toBeFalsy() // normal
-        expect(convert('සල්උයනෙ', Script.RO, Script.SI, {'checkRomanConvert' : true}))
+        expect(convert('සල්උයනෙ', Script.LATN, Script.SINH, {'checkRomanConvert' : true}))
             .toEqual('Saluyane')
-        expect(convert('Saluyane', Script.SI, Script.RO)).toEqual('සලුයනෙ') // note we are getting a different word
+        expect(convert('Saluyane', Script.SINH, Script.LATN)).toEqual('සලුයනෙ') // note we are getting a different word
     })
     test('aspiratedHalPlusH', () => {
         expect(checkRomanConvert('‘සරියබ්ර්හ්මි')).toBeFalsy() // ra not aspirated 
         expect(checkRomanConvert('‘සරියබ්ක්හ්මි')).toBeTruthy() // ka is aspirated
-        expect(convert('‘සරියබ්ක්හ්මි', Script.RO, Script.SI, {'checkRomanConvert' : true}))
+        expect(convert('‘සරියබ්ක්හ්මි', Script.LATN, Script.SINH, {'checkRomanConvert' : true}))
             .toEqual('‘Sariyabkhmi')
-        expect(convert('‘Sariyabkhmi', Script.SI, Script.RO)).toEqual('‘සරියබ්ඛ්මි') // note we are getting a different word
+        expect(convert('‘Sariyabkhmi', Script.SINH, Script.LATN)).toEqual('‘සරියබ්ඛ්මි') // note we are getting a different word
     })
 })
 
 describe('checkUnconverted', () => {
     test('function', () => {
-        expect(checkUnconverted(convert('ඇලුම්ඇති', Script.RO, Script.SI))).toBeTruthy() // has non pali vowels which will not be converted
-        expect(checkUnconverted(convert('පස්දෙනෙක්', Script.RO, Script.SI))).toBeFalsy()
+        expect(checkUnconverted(convert('ඇලුම්ඇති', Script.LATN, Script.SINH))).toBeTruthy() // has non pali vowels which will not be converted
+        expect(checkUnconverted(convert('පස්දෙනෙක්', Script.LATN, Script.SINH))).toBeFalsy()
     })
 })
