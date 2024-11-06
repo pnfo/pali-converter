@@ -1,7 +1,7 @@
 import { checkRomanConvert, checkUnconverted, convert, convertMixed, Script } from './index.js'
 
 const roSentence = 'Evaṃ me sutaṃ – ekaṃ samayaṃ bhagavā antarā ca rājagahaṃ antarā ca nāḷandaṃ addhānamaggappaṭipanno hoti mahatā bhikkhusaṅghena saddhiṃ pañcamattehi bhikkhusatehi.',
-    thaiSentence = 'เอวํ เม สุตํ – เอกํ สมยํ ภควา อนฺตรา จ ราชคหํ อนฺตรา จ นาฬนฺทํ อทฺธานมคฺคปฺปฏิปนฺโน โหติ มหตา ภิกฺขุสงฺเฆน สทฺธึ ปฺจมตฺเตหิ ภิกฺขุสเตหิ.',
+    thaiSentence = 'เอวํ เม สุตํ – เอกํ สมยํ ภควา อนฺตรา จ ราชคหํ อนฺตรา จ นาฬนฺทํ อทฺธานมคฺคปฺปฏิปนฺโน โหติ มหตา ภิกฺขุสงฺเฆน สทฺธิํ ปญฺจมตฺเตหิ ภิกฺขุสเตหิ.',
     mySentence = 'ဧဝံ မေ သုတံ – ဧကံ သမယံ ဘဂဝါ အန္တရာ စ ရာဇဂဟံ အန္တရာ စ နာဠန္ဒံ အဒ္ဓါနမဂ္ဂပ္ပဋိပန္နော ဟောတိ မဟတာ ဘိက္ခုသင်္ဃေန သဒ္ဓိံ ပဉ္စမတ္တေဟိ ဘိက္ခုသတေဟိ.',
     siSentence = 'එවං මෙ සුතං – එකං සමයං භගවා අන්තරා ච රාජගහං අන්තරා ච නාළන්දං අද්ධානමග්ගප්පටිපන්නො හොති මහතා භික්ඛුසඞ්ඝෙන සද්ධිං පඤ්චමත්තෙහි භික්ඛුසතෙහි.',
     mixedSentence = 'එවං මෙ සුතං – ဧကံ သမယံ ဘဂဝါ အန္တရာ စ ရာဇဂဟံ အန္တရာ စ นาฬนฺทํ อทฺธานมคฺคปฺปฏิปนฺโน โหติ มหตา ภิกฺขุสงฺเฆน สทฺธึ pañcamattehi bhikkhusatehi.'

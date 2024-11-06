@@ -3,7 +3,7 @@
  * The code and character mapping defined in this file can not be used for any commercial purposes.
  * Permission from the auther is required for all other purposes.
  * Edit 2021 - added (non pali) sanskrit consonents and vowels
- * Edit 2024 - changed script code names to be iso
+ * Edit 2024 - changed script code names to be iso, added cache for hashMaps, added cakm, java, bali
  */
 
 "use strict";
@@ -16,44 +16,54 @@ export const Script = Object.freeze({
     DEVA: 'deva',
     LATN: 'latn',
     THAI: 'thai',
-    LAOO: 'laoo',
     MYMR: 'mymr',
     KHMR: 'khmr',
-    BENG: 'beng', ASSE: 'asse', // related (no code in iso list)
+    LAOO: 'laoo',
+    BENG: 'beng',
+    TIBT: 'tibt',
+    CYRL: 'cyrl',
     GURU: 'guru',
-    LANA: 'lana', //beta - to be removed
     GUJR: 'gujr',
     TELU: 'telu',
     KNDA: 'knda',
     MLYM: 'mlym',
-    BRAH: 'brah',
-    TIBT: 'tibt',
-    CYRL: 'cyrl',
+    TAML: 'taml', // Tamil extended - same range/chars as Malayalam but different font
+    ASSE: 'asse', // related to BENG (no code in iso list)
+    LANA: 'lana', // Tai Tham (Lanna) - northern thai script
+    BRAH: 'brah', // Brahmi no speakers
+    CAKM: 'cakm', // Chakma 0.3m speakers
+    JAVA: 'java', // Javanese 80m speakers
+    BALI: 'bali', // Balinese 3m speakers
 });
+export const isScript = (name) => !!Script[name.toUpperCase()]
 
-export const paliScriptInfo = new Map ([
-    [Script.SINH,  ['Sinhala',    'සිංහල',        [[0x0D80, 0x0DFF]],                 {f: 'sl_flag.png'}             ]],
-    [Script.DEVA,  ['Devanagari', 'देवनागरी',       [[0x0900, 0x097F]],                 {f: 'in_flag.png'}             ]],
-    [Script.LATN,  ['Roman',      'Roman',       [[0x0000, 0x017F], [0x1E00, 0x1EFF]], {f: 'uk_flag.png'}          ]], // latin extended and latin extended additional blocks
-    [Script.THAI,  ['Thai',       'ไทย',         [[0x0E00, 0x0E7F], 0xF70F, 0xF700], {f: 'th_flag.png'}             ]], // thai special letters are outside the range 
-    [Script.LAOO,  ['Laos',       'ລາວ',         [[0x0E80, 0x0EFF]],                 {f: 'laos_flag.png'}           ]],
-    [Script.MYMR,  ['Myanmar',    'ဗမာစာ',       [[0x1000, 0x107F]],                 {f: 'my_flag.png'}             ]],
-    [Script.KHMR,  ['Khmer',      'ភាសាខ្មែរ',      [[0x1780, 0x17FF]],                 {f: 'kh_flag.png'}             ]],
-    [Script.BENG,  ['Bengali',    'বাংলা',        [[0x0980, 0x09FF]],                 {f: 'bangla_flag.png', g: 'indian'} ]],
-    [Script.ASSE,  ['Assamese',   'অসমীয়া',      [],                                 {f: 'bangla_flag.png', g: 'indian'} ]], // assamese uses the same bangla unicode block and most of its letters
-    [Script.GURU,  ['Gurmukhi',   'ਗੁਰਮੁਖੀ',       [[0x0A00, 0x0A7F]],                 {g: 'indian'}                  ]],
-    [Script.GUJR,  ['Gujarati',   'ગુજરાતી',       [[0x0A80, 0x0AFF]],                 {g: 'indian'}                  ]],
-    [Script.TELU,  ['Telugu',     'తెలుగు',       [[0x0C00, 0x0C7F]],                 {g: 'indian'}                  ]],
-    [Script.KNDA,  ['Kannada',    'ಕನ್ನಡ',        [[0x0C80, 0x0CFF]],                 {g: 'indian'}                  ]],
-    [Script.MLYM,  ['Malayalam',  'മലയാളം',      [[0x0D00, 0x0D7F]],                 {g: 'indian'}                  ]],
-    [Script.LANA,  ['Tai Tham',   'Tai Tham LN', [[0x1A20, 0x1AAF]],                 {c: 'beta-script', g: 'other'} ]],
-    [Script.BRAH,  ['Brahmi',     'Brāhmī',      [[0xD804, 0xD804], [0xDC00, 0xDC7F]], {g: 'other'}               ]], //charCodeAt returns two codes for each letter [[0x11000, 0x1107F]]
-    [Script.TIBT,  ['Tibetan',    'བོད་སྐད།',        [[0x0F00, 0x0FFF]],                 {f: 'tibet_flag.png', c: 'larger', g: 'other'} ]],
-    [Script.CYRL,  ['Cyrillic',   'кириллица',   [[0x0400, 0x04FF], [0x0300, 0x036F]], {f: 'russia_flag.png', g: 'other'} ]], // also adding the "Combining Diacritical Marks" block 
+export const PaliScriptInfo = new Map ([
+    [Script.SINH,  ['Sinhala',    'සිංහල',        [[0x0D80, 0x0DFF]],                 {f: 'sri-lanka.svg'}     ]],
+    [Script.DEVA,  ['Devanagari', 'देवनागरी',       [[0x0900, 0x097F]],                 {f: 'india.svg'}         ]],
+    [Script.LATN,  ['Roman',      'Roman',       [[0x0000, 0x017F], [0x1E00, 0x1EFF]], {f: 'uk.svg'}          ]], // latin extended and latin extended additional blocks
+    [Script.THAI,  ['Thai',       'ไทย',         [[0x0E00, 0x0E7F]],                 {f: 'thailand.svg'}      ]], 
+    [Script.MYMR,  ['Myanmar',    'ဗမာစာ',       [[0x1000, 0x107F]],                 {f: 'myanmar.svg'}       ]],
+    [Script.KHMR,  ['Khmer',      'ភាសាខ្មែរ',      [[0x1780, 0x17FF]],                 {f: 'cambodia.svg'}      ]],
+    [Script.LAOO,  ['Laos',       'ລາວ',         [[0x0E80, 0x0EFF]],                 {f: 'laos.svg'}           ]],
+    [Script.BENG,  ['Bengali',    'বাংলা',        [[0x0980, 0x09FF]],                 {f: 'bangladesh.svg'} ]],
+    [Script.TIBT,  ['Tibetan',    'བོད་སྐད།',        [[0x0F00, 0x0FFF]],                 {f: 'tibet.svg', c: 'larger'} ]],
+    [Script.CYRL,  ['Cyrillic',   'кириллица',   [[0x0400, 0x04FF], [0x0300, 0x036F]], {f: 'russia.svg'} ]], // also adding the "Combining Diacritical Marks" block 
+    [Script.GURU,  ['Gurmukhi',   'ਗੁਰਮੁਖੀ',       [[0x0A00, 0x0A7F]],                  {f: 'india.svg'}                  ]],
+    [Script.GUJR,  ['Gujarati',   'ગુજરાતી',       [[0x0A80, 0x0AFF]],                 {f: 'india.svg'}                   ]],
+    [Script.TELU,  ['Telugu',     'తెలుగు',       [[0x0C00, 0x0C7F]],                  {f: 'india.svg'}                  ]],
+    [Script.KNDA,  ['Kannada',    'ಕನ್ನಡ',        [[0x0C80, 0x0CFF]],                  {f: 'india.svg'}                  ]],
+    [Script.MLYM,  ['Malayalam',  'മലയാളം',      [[0x0D00, 0x0D7F]],                 {f: 'india.svg'}                   ]],
+    [Script.TAML,  ['Tamil',      'தமிழ்',         [],                                {f: 'india.svg'}                    ]], // Tamil extended - uses different font from Malayalam
+    [Script.ASSE,  ['Assamese',   'অসমীয়া',      [],                                  {f: 'bangladesh.svg'} ]], // assamese uses the same bangla unicode block and most of its letters
+    [Script.LANA,  ['Tai Tham',   'ᨲ᩠ᩅᩫᨵᩢᨾ᩠ᨾ᩼',         [[0x1A20, 0x1AAF]],                  {f: 'thailand.svg' } ]],
+    [Script.CAKM,  ['Chakma',     '𑄌𑄋𑄴𑄟𑄳𑄦',        [[0xD804, 0xD804], [0xDD00, 0xDD7F]],    {f: 'bangladesh.svg' } ]], // two codes same as brah [0x11100, 0x1114F]
+    [Script.JAVA,  ['Javanese',   'ꦗꦮ',         [[0xA980, 0xA9DF]],                  {f: 'indonesia.svg' } ]],
+    [Script.BALI,  ['Balinese',   'ᬩᬮᬶ',        [[0x1B00, 0x1B7F]],                  {f: 'indonesia.svg' } ]],
+    [Script.BRAH,  ['Brahmi',     'Brāhmī',      [[0xD804, 0xD804], [0xDC00, 0xDC7F]], {f: 'empty.svg'}               ]], //charCodeAt returns two codes for each letter [[0x11000, 0x1107F]]
 ]);
 
 export function getScriptForCode(charCode) {
-    for (let info of paliScriptInfo) {
+    for (let info of PaliScriptInfo) {
         for (let range of info[1][2]) {
             if (Array.isArray(range) && charCode >= range[0] && charCode <= range[1]) return info[0];
             if (Number.isInteger(range) && charCode == range) return info[0];
@@ -78,111 +88,122 @@ const script_index = {
     [Script.TELU]: 11,
     [Script.KNDA]: 12,
     [Script.MLYM]: 13,
+    [Script.TAML]: 13, // same as malayalam
     [Script.BRAH]: 14,
     [Script.TIBT]: 15,
-    [Script.CYRL]: 16,
+    [Script.CAKM]: 16,
+    [Script.JAVA]: 17,
+    [Script.BALI]: 18,
+    [Script.CYRL]: 19,
 };
 
 const specials = [ 
     // independent vowels
-    ['අ', 'अ', 'a', 'อ', 'ອ', 'အ', 'អ', 'অ', 'ਅ', '\u1A4B', 'અ', 'అ', 'ಅ', 'അ', '𑀅', 'ཨ', 'а'],
-    ['ආ', 'आ', 'ā', 'อา', 'ອາ', 'အာ', 'អា', 'আ', 'ਆ', '\u1A4C', 'આ', 'ఆ', 'ಆ', 'ആ', '𑀆', 'ཨཱ', 'а̄'],
-    ['ඉ', 'इ', 'i', 'อิ', 'ອິ', 'ဣ', 'ឥ', 'ই', 'ਇ', '\u1A4D', 'ઇ', 'ఇ', 'ಇ', 'ഇ', '𑀇', 'ཨི', 'и'],
-    ['ඊ', 'ई', 'ī', 'อี', 'ອີ', 'ဤ', 'ឦ', 'ঈ', 'ਈ', '\u1A4E', 'ઈ', 'ఈ', 'ಈ', 'ഈ', '𑀈', 'ཨཱི', 'ӣ'],
-    ['උ', 'उ', 'u', 'อุ', 'ອຸ', 'ဥ', 'ឧ', 'উ', 'ਉ', '\u1A4F', 'ઉ', 'ఉ', 'ಉ', 'ഉ', '𑀉', 'ཨུ', 'у'], 
-    ['ඌ', 'ऊ', 'ū', 'อู', 'ອູ', 'ဦ', 'ឩ', 'ঊ', 'ਊ', '\u1A50', 'ઊ', 'ఊ', 'ಊ', 'ഊ', '𑀊', 'ཨཱུ', 'ӯ'],
-    ['එ', 'ए', 'e', 'อเ', 'ອເ', 'ဧ', 'ឯ', 'এ', 'ਏ', '\u1A51', 'એ', 'ఏ', 'ಏ', 'ഏ', '𑀏', 'ཨེ', 'е'],
-    ['ඔ', 'ओ', 'o', 'อโ', 'ອໂ', 'ဩ', 'ឱ', 'ও', 'ਓ', '\u1A52', 'ઓ', 'ఓ', 'ಓ', 'ഓ', '𑀑', 'ཨོ', 'о'],
+    ['අ',   'अ',   'a',   'อ',   'ອ',   'အ',   'អ',    'অ',   'ਅ',   'ᩋ',   'અ',   'అ',   'ಅ',   'അ',   '𑀅',   'ཨ',   '𑄃',   'ꦄ',   'ᬅ',   'а'],
+    ['ආ',   'आ',   'ā',   'อา',  'ອາ',  'အာ',  'អា',   'আ',   'ਆ',   'ᩌ',  'આ',   'ఆ',   'ಆ',   'ആ',   '𑀆',   'ཨཱ',   '𑄃𑄂',   'ꦄꦴ',  'ᬆ',   'а̄'],
+    ['ඉ',   'इ',   'i',   'อิ',   'ອິ',   'ဣ',   'ឥ',    'ই',   'ਇ',   'ᩍ',    'ઇ',   'ఇ',   'ಇ',   'ഇ',     '𑀇',   'ཨི',   '𑄄',   'ꦆ',   'ᬇ',   'и'],
+    ['ඊ',   'ई',   'ī',   'อี',   'ອີ',   'ဤ',   'ឦ',   'ঈ',   'ਈ',   'ᩎ',   'ઈ',   'ఈ',   'ಈ',   'ഈ',   '𑀈',   'ཨཱི',   '𑄃𑄩',   'ꦇ',   'ᬈ',   'ӣ'],
+    ['උ',   'उ',   'u',   'อุ',   'ອຸ',   'ဥ',    'ឧ',    'উ',   'ਉ',   'ᩏ',    'ઉ',   'ఉ',   'ಉ',   'ഉ',    '𑀉',   'ཨུ',   '𑄅',    'ꦈ',   'ᬉ',    'у'],
+    ['ඌ',   'ऊ',   'ū',   'อู',   'ອູ',   'ဦ',    'ឩ',   'ঊ',   'ਊ',   'ᩐ',    'ઊ',   'ఊ',   'ಊ',   'ഊ',  '𑀊',   'ཨཱུ',   '𑄃𑄫',   'ꦈꦴ',  'ᬊ',   'ӯ'],
+    ['එ',   'ए',   'e',   'อเ',   'ອເ',   'ဧ',   'ឯ',    'এ',   'ਏ',   'ᩑ',   'એ',   'ఏ',   'ಏ',   'ഏ',    '𑀏',   'ཨེ',   '𑄆',    'ꦌ',   'ᬏ',   'е'],
+    ['ඔ',   'ओ',   'o',   'อโ',   'ອໂ',  'ဩ',   'ឱ',   'ও',   'ਓ',   'ᩒ',   'ઓ',   'ఓ',   'ಓ',   'ഓ',   '𑀑',   'ཨོ',   '𑄃𑄮',   'ꦎ',   'ᬑ',   'о'],
     // various signs  
-    ['ං', 'ं', 'ṃ', '\u0E4D', '\u0ECD', 'ံ', 'ំ', 'ং', 'ਂ', '\u1A74', 'ં', 'ం', 'ಂ', 'ം', '𑀁', '\u0F7E', 'м̣'], // niggahita - anusawara
+    ['ං',   'ं',   'ṃ',   'ํ',   'ໍ',   'ံ',   'ំ',   'ং',   'ਂ',   'ᩴ',   'ં',   'ం',   'ಂ',   'ം',   '𑀁',   'ཾ',   '𑄁',   'ꦁ',   'ᬂ',   'м̣'], // niggahita - anusawara
     // visarga - not in pali but deva original text has it (thai/lao/tt - not found. using the closest equivalent per wikipedia)
-    ['ඃ', 'ः', 'ḥ', 'ะ', 'ະ', 'း', 'ះ', 'ঃ', 'ਃ', '\u1A61', 'ઃ', 'ః', 'ಃ', 'ഃ', '𑀂', '\u0F7F', 'х̣'],
+    ['ඃ',   'ः',   'ḥ',   'ะ',   'ະ',   'း',   'ះ',   'ঃ',   'ਃ',   'ᩡ',   'ઃ',   'ః',   'ಃ',   'ഃ',   '𑀂',   'ཿ',   '𑄂',   'ꦃ',   'ᬄ',   'х̣'],
     // virama (al - hal). roman/cyrillic need special handling
-    ['්', '्', '', '\u0E3A', '\u0EBA', '္', '្', '্', '੍', '\u1A60', '્', '్', '್', '്', '\uD804\uDC46', '\u0F84', ''], 
+    ['්',   '्',   '',   'ฺ',   '຺',   '္',   '្',   '্',   '੍',   '᩠',   '્',   '్',   '್',   '്',   '𑁆',   '྄',   '𑄴',   '꧀',   '᭄',   ''],
     // digits
-    ['0', '०', '0', '๐', '໐', '၀', '០', '০', '੦', '\u1A90', '૦', '౦', '೦', '൦', '𑁦', '༠', '0'],
-    ['1', '१', '1', '๑', '໑', '၁', '១', '১', '੧', '\u1A91', '૧', '౧', '೧', '൧', '𑁧', '༡', '1'],
-    ['2', '२', '2', '๒', '໒', '၂', '២', '২', '੨', '\u1A92', '૨', '౨', '೨', '൨', '𑁨', '༢', '2'],
-    ['3', '३', '3', '๓', '໓', '၃', '៣', '৩', '੩', '\u1A93', '૩', '౩', '೩', '൩', '𑁩', '༣', '3'],
-    ['4', '४', '4', '๔', '໔', '၄', '៤', '৪', '੪', '\u1A94', '૪', '౪', '೪', '൪', '𑁪', '༤', '4'],
-    ['5', '५', '5', '๕', '໕', '၅', '៥', '৫', '੫', '\u1A95', '૫', '౫', '೫', '൫', '𑁫', '༥', '5'],
-    ['6', '६', '6', '๖', '໖', '၆', '៦', '৬', '੬', '\u1A96', '૬', '౬', '೬', '൬', '𑁬', '༦', '6'],
-    ['7', '७', '7', '๗', '໗', '၇', '៧', '৭', '੭', '\u1A97', '૭', '౭', '೭', '൭', '𑁭', '༧', '7'],
-    ['8', '८', '8', '๘', '໘', '၈', '៨', '৮', '੮', '\u1A98', '૮', '౮', '೮', '൮', '𑁮', '༨', '8'],
-    ['9', '९', '9', '๙', '໙', '၉', '៩', '৯', '੯', '\u1A99', '૯', '౯', '೯', '൯', '𑁯', '༩', '9'],
+    ['0',   '०',   '0',   '๐',   '໐',   '၀',   '០',   '০',   '੦',   '᪐',   '૦',   '౦',   '೦',   '൦',   '𑁦',   '༠',    '𑄶',   '꧐',   '᭐',   '0'],
+    ['1',   '१',   '1',   '๑',   '໑',   '၁',   '១',   '১',   '੧',   '᪑',   '૧',   '౧',   '೧',   '൧',   '𑁧',   '༡',   '𑄷',   '꧑',   '᭑',   '1'],
+    ['2',   '२',   '2',   '๒',   '໒',   '၂',   '២',   '২',   '੨',   '᪒',   '૨',   '౨',   '೨',   '൨',   '𑁨',   '༢',   '𑄸',   '꧒',   '᭒',   '2'],
+    ['3',   '३',   '3',   '๓',   '໓',   '၃',   '៣',   '৩',   '੩',   '᪓',   '૩',   '౩',   '೩',   '൩',   '𑁩',   '༣',  '𑄹',   '꧓',  '᭓',   '3'],
+    ['4',   '४',   '4',   '๔',   '໔',   '၄',   '៤',   '৪',   '੪',   '᪔',   '૪',   '౪',   '೪',   '൪',   '𑁪',   '༤',   '𑄺',   '꧔',   '᭔',   '4'],
+    ['5',   '५',   '5',   '๕',   '໕',   '၅',   '៥',   '৫',   '੫',   '᪕',   '૫',   '౫',   '೫',   '൫',   '𑁫',   '༥',   '𑄻',   '꧕',   '᭕',   '5'],
+    ['6',   '६',   '6',   '๖',   '໖',   '၆',   '៦',   '৬',   '੬',   '᪖',   '૬',   '౬',   '೬',   '൬',   '𑁬',   '༦',   '𑄼',   '꧖',   '᭖',   '6'],
+    ['7',   '७',   '7',   '๗',   '໗',   '၇',   '៧',   '৭',   '੭',   '᪗',   '૭',   '౭',   '೭',   '൭',   '𑁭',   '༧',   '𑄽',   '꧗',   '᭗',   '7'],
+    ['8',   '८',   '8',   '๘',   '໘',   '၈',   '៨',   '৮',   '੮',   '᪘',   '૮',   '౮',   '೮',   '൮',   '𑁮',   '༨',   '𑄾',   '꧘',   '᭘',   '8'],
+    ['9',   '९',   '9',   '๙',   '໙',   '၉',   '៩',   '৯',   '੯',   '᪙',   '૯',   '౯',   '೯',   '൯',   '𑁯',   '༩',   '𑄿',  '꧙',   '᭙',   '9'],
     // sanskrit independent vowels - short o and short e does not occur in pali/sinskrit the long version is listed above
-    ['ඓ', 'ऐ', 'ai'],
-    ['ඖ', 'औ', 'au'],
-    ['ඍ', 'ऋ', 'ṛ'],
-    ['ඎ', 'ॠ', 'ṝ'],
-    ['ඏ', 'ऌ', 'l̥'], // roman changed since otherwise conflicting with ළ් ḷ 
-    ['ඐ', 'ॡ', 'ḹ'],
+    ['ඓ',   'ऐ',   'ai'],
+    ['ඖ',   'औ',   'au'],
+    ['ඍ',   'ऋ',   'ṛ'],
+    ['ඎ',   'ॠ',   'ṝ'],
+    ['ඏ',   'ऌ',   'l̥'], // roman changed since otherwise conflicting with ළ් ḷ 
+    ['ඐ',   'ॡ',   'ḹ']
 ];
 
-const consos = [ 
+const consos = [
     // velar stops
-    ['ක', 'क', 'k', 'ก',    'ກ', 'က', 'ក', 'ক', 'ਕ', '\u1A20', 'ક', 'క', 'ಕ', 'ക', '𑀓', 'ཀ', 'к'],
-    ['ඛ', 'ख', 'kh', 'ข',   'ຂ', 'ခ', 'ខ', 'খ', 'ਖ', '\u1A21', 'ખ', 'ఖ', 'ಖ', 'ഖ', '𑀔', 'ཁ', 'кх'],
-    ['ග', 'ग', 'g', 'ค',    'ຄ', 'ဂ', 'គ', 'গ', 'ਗ', '\u1A23', 'ગ', 'గ', 'ಗ', 'ഗ', '𑀕', 'ག', 'г'], 
-    ['ඝ', 'घ', 'gh', 'ฆ',   '\u0E86', 'ဃ', 'ឃ', 'ঘ', 'ਘ', '\u1A25', 'ઘ', 'ఘ', 'ಘ', 'ഘ', '𑀖', 'གྷ', 'гх'],
-    ['ඞ', 'ङ', 'ṅ', 'ง',    'ງ', 'င', 'ង', 'ঙ', 'ਙ', '\u1A26', 'ઙ', 'ఙ', 'ಙ', 'ങ', '𑀗', 'ང', 'н̇'],
+    ['ක',   'क',   'k',   'ก',   'ກ',   'က',   'ក',   'ক',   'ਕ',   'ᨠ',   'ક',   'క',   'ಕ',   'ക',   '𑀓',   'ཀ',   '𑄇',   'ꦏ',   'ᬓ',   'к'],
+    ['ඛ',   'ख',   'kh',   'ข',   'ຂ',   'ခ',   'ខ',   'খ',   'ਖ',   'ᨡ',   'ખ',   'ఖ',   'ಖ',   'ഖ',   '𑀔',   'ཁ',   '𑄈',   'ꦑ',   'ᬔ',   'кх'],
+    ['ග',   'ग',   'g',   'ค',   'ຄ',   'ဂ',   'គ',   'গ',   'ਗ',   'ᨣ',   'ગ',   'గ',   'ಗ',   'ഗ',   '𑀕',   'ག',   '𑄉',   'ꦒ',   'ᬕ',   'г'],
+    ['ඝ',   'घ',   'gh',   'ฆ',   'ຆ',   'ဃ',   'ឃ',   'ঘ',   'ਘ',   'ᨥ',   'ઘ',   'ఘ',   'ಘ',   'ഘ',   '𑀖',   'གྷ',   '𑄊',   'ꦓ',   'ᬖ',   'гх'],
+    ['ඞ',   'ङ',   'ṅ',   'ง',   'ງ',   'င',   'ង',   'ঙ',   'ਙ',   'ᨦ',   'ઙ',   'ఙ',   'ಙ',   'ങ',   '𑀗',   'ང',   '𑄋',   'ꦔ',   'ᬗ',   'н̇'],
     // palatal stops
-    ['ච', 'च', 'c', 'จ',    'ຈ', 'စ', 'ច', 'চ', 'ਚ', '\u1A27', 'ચ', 'చ', 'ಚ', 'ച', '𑀘', 'ཙ', 'ч'],
-    ['ඡ', 'छ', 'ch', 'ฉ',   '\u0E89', 'ဆ', 'ឆ', 'ছ', 'ਛ', '\u1A28', 'છ', 'ఛ', 'ಛ', 'ഛ', '𑀙', 'ཚ', 'чх'],
-    ['ජ', 'ज', 'j', 'ช',    'ຊ', 'ဇ', 'ជ', 'জ', 'ਜ', '\u1A29', 'જ', 'జ', 'ಜ', 'ജ', '𑀚', 'ཛ', 'дж'],
-    ['ඣ', 'झ', 'jh', 'ฌ',  '\u0E8C', 'ဈ', 'ឈ', 'ঝ', 'ਝ', '\u1A2B', 'ઝ', 'ఝ', 'ಝ', 'ഝ', '𑀛', 'ཛྷ', 'джх'],
-    ['ඤ', 'ञ', 'ñ', 'ญ',    '\u0E8E', 'ဉ', 'ញ', 'ঞ', 'ਞ', '\u1A2C', 'ઞ', 'ఞ', 'ಞ', 'ഞ', '𑀜', 'ཉ', 'н̃'],
+    ['ච',   'च',   'c',   'จ',   'ຈ',   'စ',   'ច',   'চ',   'ਚ',   'ᨧ',   'ચ',   'చ',   'ಚ',   'ച',   '𑀘',   'ཙ',   '𑄌',   'ꦕ',   'ᬘ',   'ч'],
+    ['ඡ',   'छ',   'ch',   'ฉ',   'ຉ',   'ဆ',   'ឆ',   'ছ',   'ਛ',   'ᨨ',   'છ',   'ఛ',   'ಛ',   'ഛ',   '𑀙',   'ཚ',   '𑄍',   'ꦖ',   'ᬙ',   'чх'],
+    ['ජ',   'ज',   'j',   'ช',   'ຊ',   'ဇ',   'ជ',   'জ',   'ਜ',   'ᨩ',   'જ',   'జ',   'ಜ',   'ജ',   '𑀚',   'ཛ',   '𑄎',   'ꦗ',   'ᬚ',   'дж'],
+    ['ඣ',   'झ',   'jh',   'ฌ',   'ຌ',   'ဈ',   'ឈ',   'ঝ',   'ਝ',   'ᨫ',   'ઝ',   'ఝ',   'ಝ',   'ഝ',   '𑀛',   'ཛྷ',   '𑄏',   'ꦙ',   'ᬛ',   'джх'],
+    ['ඤ',   'ञ',   'ñ',   'ญ',   'ຎ',   'ဉ',   'ញ',   'ঞ',   'ਞ',   'ᨬ',   'ઞ',   'ఞ',   'ಞ',   'ഞ',   '𑀜',   'ཉ',   '𑄐',   'ꦚ',   'ᬜ',   'н̃'],
     // retroflex stops
-    ['ට', 'ट', 'ṭ', 'ฏ',    '\u0E8F', 'ဋ', 'ដ', 'ট', 'ਟ', '\u1A2D', 'ટ', 'ట', 'ಟ', 'ട', '𑀝', 'ཊ', 'т̣'],
-    ['ඨ', 'ठ', 'ṭh', 'ฐ',   '\u0E90', 'ဌ', 'ឋ', 'ঠ', 'ਠ', '\u1A2E', 'ઠ', 'ఠ', 'ಠ', 'ഠ', '𑀞', 'ཋ', 'т̣х'],
-    ['ඩ', 'ड', 'ḍ', 'ฑ',    '\u0E91', 'ဍ', 'ឌ', 'ড', 'ਡ', '\u1A2F', 'ડ', 'డ', 'ಡ', 'ഡ', '𑀟', 'ཌ', 'д̣'], 
-    ['ඪ', 'ढ', 'ḍh', 'ฒ',   '\u0E92', 'ဎ', 'ឍ', 'ঢ', 'ਢ', '\u1A30', 'ઢ', 'ఢ', 'ಢ', 'ഢ', '𑀠', 'ཌྷ', 'д̣х'],
-    ['ණ', 'ण', 'ṇ', 'ณ',   '\u0E93', 'ဏ', 'ណ', 'ণ', 'ਣ', '\u1A31', 'ણ', 'ణ', 'ಣ', 'ണ', '𑀡', 'ཎ', 'н̣'],
+    ['ට',   'ट',   'ṭ',   'ฏ',   'ຏ',   'ဋ',   'ដ',   'ট',   'ਟ',   'ᨭ',   'ટ',   'ట',   'ಟ',   'ട',   '𑀝',   'ཊ',   '𑄑',   'ꦛ',   'ᬝ',   'т̣'],
+    ['ඨ',   'ठ',   'ṭh',   'ฐ',   'ຐ',   'ဌ',   'ឋ',   'ঠ',   'ਠ',   'ᨮ',   'ઠ',   'ఠ',   'ಠ',   'ഠ',   '𑀞',   'ཋ',   '𑄒',   'ꦜ',   'ᬞ',   'т̣х'],
+    ['ඩ',   'ड',   'ḍ',   'ฑ',   'ຑ',   'ဍ',   'ឌ',   'ড',   'ਡ',   'ᨯ',   'ડ',   'డ',   'ಡ',   'ഡ',   '𑀟',   'ཌ',   '𑄓',   'ꦝ',   'ᬟ',   'д̣'],
+    ['ඪ',   'ढ',   'ḍh',   'ฒ',   'ຒ',   'ဎ',   'ឍ',   'ঢ',   'ਢ',   'ᨰ',   'ઢ',   'ఢ',   'ಢ',   'ഢ',   '𑀠',   'ཌྷ',   '𑄔',   'ꦞ',   'ᬠ',   'д̣х'],
+    ['ණ',   'ण',   'ṇ',   'ณ',   'ຓ',   'ဏ',   'ណ',   'ণ',   'ਣ',   'ᨱ',   'ણ',   'ణ',   'ಣ',   'ണ',   '𑀡',   'ཎ',   '𑄕',   'ꦟ',   'ᬡ',   'н̣'],
     // dental stops
-    ['ත', 'त', 't', 'ต',    'ຕ', 'တ', 'ត', 'ত', 'ਤ', '\u1A32', 'ત', 'త', 'ತ', 'ത', '𑀢', 'ཏ', 'т'],
-    ['ථ', 'थ', 'th', 'ถ',   'ຖ', 'ထ', 'ថ', 'থ', 'ਥ', '\u1A33', 'થ', 'థ', 'ಥ', 'ഥ', '𑀣', 'ཐ', 'тх'],
-    ['ද', 'द', 'd', 'ท',    'ທ', 'ဒ', 'ទ', 'দ', 'ਦ', '\u1A34', 'દ', 'ద', 'ದ', 'ദ', '𑀤', 'ད', 'д'],
-    ['ධ', 'ध', 'dh', 'ธ',   '\u0E98', 'ဓ', 'ធ', 'ধ', 'ਧ', '\u1A35', 'ધ', 'ధ', 'ಧ', 'ധ', '𑀥', 'དྷ', 'дх'],
-    ['න', 'न', 'n', 'น',    'ນ', 'န', 'ន', 'ন', 'ਨ', '\u1A36', 'ન', 'న', 'ನ', 'ന', '𑀦', 'ན', 'н'],
+    ['ත',   'त',   't',   'ต',   'ຕ',   'တ',   'ត',   'ত',   'ਤ',   'ᨲ',   'ત',   'త',   'ತ',   'ത',   '𑀢',   'ཏ',   '𑄖',   'ꦠ',   'ᬢ',   'т'],
+    ['ථ',   'थ',   'th',   'ถ',   'ຖ',   'ထ',   'ថ',   'থ',   'ਥ',   'ᨳ',   'થ',   'థ',   'ಥ',   'ഥ',   '𑀣',   'ཐ',   '𑄗',   'ꦡ',   'ᬣ',   'тх'],
+    ['ද',   'द',   'd',   'ท',   'ທ',   'ဒ',   'ទ',   'দ',   'ਦ',   'ᨴ',   'દ',   'ద',   'ದ',   'ദ',   '𑀤',   'ད',   '𑄘',   'ꦢ',   'ᬤ',   'д'],
+    ['ධ',   'ध',   'dh',   'ธ',   'ຘ',   'ဓ',   'ធ',   'ধ',   'ਧ',   'ᨵ',   'ધ',   'ధ',   'ಧ',   'ധ',   '𑀥',   'དྷ',   '𑄙',   'ꦣ',   'ᬥ',   'дх'],
+    ['න',   'न',   'n',   'น',   'ນ',   'န',   'ន',   'ন',   'ਨ',   'ᨶ',   'ન',   'న',   'ನ',   'ന',   '𑀦',   'ན',   '𑄚',   'ꦤ',   'ᬦ',   'н'],
     // labial stops
-    ['ප', 'प', 'p', 'ป',    'ປ', 'ပ', 'ប', 'প', 'ਪ', '\u1A38', 'પ', 'ప', 'ಪ', 'പ', '𑀧', 'པ', 'п'],
-    ['ඵ', 'फ', 'ph', 'ผ',  'ຜ', 'ဖ', 'ផ', 'ফ', 'ਫ', '\u1A39', 'ફ', 'ఫ', 'ಫ', 'ഫ', '𑀨', 'ཕ', 'пх'],
-    ['බ', 'ब', 'b', 'พ',   'ພ', 'ဗ', 'ព', 'ব', 'ਬ', '\u1A3B', 'બ', 'బ', 'ಬ', 'ബ', '𑀩', 'བ', 'б'], 
-    ['භ', 'भ', 'bh', 'ภ',  '\u0EA0', 'ဘ', 'ភ', 'ভ', 'ਭ', '\u1A3D', 'ભ', 'భ', 'ಭ', 'ഭ', '𑀪', 'བྷ', 'бх'],
-    ['ම', 'म', 'm', 'ม',   'ມ', 'မ', 'ម', 'ম', 'ਮ', '\u1A3E', 'મ', 'మ', 'ಮ', 'മ', '𑀫', 'མ', 'м'],
+    ['ප',   'प',   'p',   'ป',   'ປ',   'ပ',   'ប',   'প',   'ਪ',   'ᨸ',   'પ',   'ప',   'ಪ',   'പ',   '𑀧',   'པ',   '𑄛',   'ꦥ',   'ᬧ',   'п'],
+    ['ඵ',   'फ',   'ph',   'ผ',   'ຜ',   'ဖ',   'ផ',   'ফ',   'ਫ',   'ᨹ',   'ફ',   'ఫ',   'ಫ',   'ഫ',   '𑀨',   'ཕ',   '𑄜',   'ꦦ',   'ᬨ',   'пх'],
+    ['බ',   'ब',   'b',   'พ',   'ພ',   'ဗ',   'ព',   'ব',   'ਬ',   'ᨻ',   'બ',   'బ',   'ಬ',   'ബ',   '𑀩',   'བ',   '𑄝',   'ꦧ',   'ᬩ',   'б'],
+    ['භ',   'भ',   'bh',   'ภ',   'ຠ',   'ဘ',   'ភ',   'ভ',   'ਭ',   'ᨽ',   'ભ',   'భ',   'ಭ',   'ഭ',   '𑀪',   'བྷ',   '𑄞',   'ꦨ',   'ᬪ',   'бх'],
+    ['ම',   'म',   'm',   'ม',   'ມ',   'မ',   'ម',   'ম',   'ਮ',   'ᨾ',   'મ',   'మ',   'ಮ',   'മ',   '𑀫',   'མ',   '𑄟',   'ꦩ',   'ᬫ',   'м'],
     // liquids, fricatives, etc.
-    ['ය', 'य', 'y', 'ย',   'ຍ', 'ယ', 'យ', 'য', 'ਯ', '\u1A3F', 'ય', 'య', 'ಯ', 'യ', '𑀬', 'ཡ', 'й'],
-    ['ර', 'र', 'r', 'ร',   'ຣ', 'ရ', 'រ', 'র', 'ਰ', '\u1A41', 'ર', 'ర', 'ರ', 'ര', '𑀭', 'ར', 'р'],
-    ['ල', 'ल', 'l', 'ล',  'ລ', 'လ', 'ល', 'ল', 'ਲ', '\u1A43', 'લ', 'ల', 'ಲ', 'ല', '𑀮', 'ལ', 'л'],
-    ['ළ', 'ळ', 'ḷ', 'ฬ',  '\u0EAC', 'ဠ', 'ឡ', 'ল়', 'ਲ਼', '\u1A4A', 'ળ', 'ళ', 'ಳ', 'ള', '𑀴', 'ལ༹', 'л̣'],
-    ['ව', 'व', 'v', 'ว',  'ວ', 'ဝ', 'វ', 'ৰ', 'ਵ', '\u1A45', 'વ', 'వ', 'ವ', 'വ', '𑀯', 'ཝ', 'в'],
-    ['ස', 'स', 's', 'ส',  'ສ', 'သ', 'ស', 'স', 'ਸ', '\u1A48', 'સ', 'స', 'ಸ', 'സ', '𑀲', 'ས', 'с'],
-    ['හ', 'ह', 'h', 'ห',  'ຫ', 'ဟ', 'ហ', 'হ', 'ਹ', '\u1A49', 'હ', 'హ', 'ಹ', 'ഹ', '𑀳', 'ཧ', 'х'],
+    ['ය',   'य',   'y',   'ย',   'ຍ',   'ယ',   'យ',   'য',   'ਯ',   'ᨿ',   'ય',   'య',   'ಯ',   'യ',   '𑀬',   'ཡ',   '𑄡',   'ꦪ',   'ᬬ',   'й'],
+    ['ර',   'र',   'r',   'ร',   'ຣ',   'ရ',   'រ',   'র',   'ਰ',   'ᩁ',   'ર',   'ర',   'ರ',   'ര',   '𑀭',   'ར',   '𑄢',   'ꦫ',   'ᬭ',   'р'],
+    ['ල',   'ल',   'l',   'ล',   'ລ',   'လ',   'ល',   'ল',   'ਲ',   'ᩃ',   'લ',   'ల',   'ಲ',   'ല',   '𑀮',   'ལ',   '𑄣',   'ꦭ',   'ᬮ',   'л'],
+    ['ළ',   'ळ',   'ḷ',   'ฬ',   'ຬ',   'ဠ',   'ឡ',   'ল়',   'ਲ਼',   'ᩊ',   'ળ',   'ళ',   'ಳ',   'ള',   '𑀴',   'ལ༹',   '𑅄',   'ꦭ꦳',   'ᬮ᬴',   'л̣'],
+    ['ව',   'व',   'v',   'ว',   'ວ',   'ဝ',   'វ',   'ৰ',   'ਵ',   'ᩅ',   'વ',   'వ',   'ವ',   'വ',   '𑀯',   'ཝ',   '𑄤',   'ꦮ',   'ᬯ',   'в'],
+    ['ස',   'स',   's',   'ส',   'ສ',   'သ',   'ស',   'স',   'ਸ',   'ᩈ',   'સ',   'స',   'ಸ',   'സ',   '𑀲',   'ས',   '𑄥',   'ꦱ',   'ᬲ',   'с'],
+    ['හ',   'ह',   'h',   'ห',   'ຫ',   'ဟ',   'ហ',   'হ',   'ਹ',   'ᩉ',   'હ',   'హ',   'ಹ',   'ഹ',   '𑀳',   'ཧ',   '𑄦',   'ꦲ',   'ᬳ',   'х'],
+    
     // sanskrit consonants
-    ['ශ', 'श', 'ś'],
-    ['ෂ', 'ष', 'ş'],
+    ['ශ',   'श',   'ś'],
+    ['ෂ',   'ष',   'ş']
 ];
 
 const vowels = [
-    ['ා', 'ा', 'ā', 'า',  'າ', 'ာ', 'ា', 'া', 'ਾ', '\u1A63', 'ા', 'ా', 'ಾ', 'ാ', '𑀸', '\u0F71', 'а̄'],
-    ['ි', 'ि', 'i', '\u0E34', '\u0EB4', 'ိ', 'ិ', 'ি', 'ਿ', '\u1A65', 'િ', 'ి', 'ಿ', 'ി', '𑀺', '\u0F72', 'и'],
-    ['ී', 'ी', 'ī', '\u0E35', '\u0EB5', 'ီ', 'ី', 'ী', 'ੀ', '\u1A66', 'ી', 'ీ', 'ೀ', 'ീ', '𑀻', '\u0F71\u0F72', 'ӣ'],
-    ['ු', 'ु', 'u', '\u0E38', '\u0EB8', 'ု', 'ុ', 'ু', 'ੁ', '\u1A69', 'ુ', 'ు', 'ು', 'ു', '𑀼', '\u0F74', 'у'],
-    ['ූ', 'ू', 'ū', '\u0E39', '\u0EB9', 'ူ', 'ូ', 'ূ', 'ੂ', '\u1A6A', 'ૂ', 'ూ', 'ೂ', 'ൂ', '𑀽', '\u0F71\u0F74', 'ӯ'],
-    ['ෙ', 'े', 'e', 'เ', 'ເ', 'ေ', 'េ', 'ে', 'ੇ', '\u1A6E', 'ે', 'ే', 'ೇ', 'േ', '𑁂', '\u0F7A', 'е'], //for th/lo - should appear in front
-    ['ො', 'ो', 'o', 'โ', 'ໂ', 'ော', 'ោ', 'ো', 'ੋ', '\u1A6E\u1A63', 'ો', 'ో', 'ೋ', 'ോ', '𑁄', '\u0F7C', 'о'], //for th/lo - should appear in front
+    ['ා',   'ा',   'ā',   'า',   'າ',   'ာ',   'ា',   'া',   'ਾ',  'ᩣ',  'ા',   'ా',   'ಾ',   'ാ',   '𑀸',   'ཱ',   '𑄧',   'ꦴ',   'ᬵ',   'а̄'], // for cakma swapping aa and a might be needed
+    ['ි',   'ि',   'i',   'ิ',    'ິ',   'ိ',    'ិ',   'ি',   'ਿ',   'ᩥ',   'િ',   'ి',   'ಿ',    'ി',   '𑀺',    'ི',   '𑄨',   'ꦶ',    'ᬶ',    'и'],
+    ['ී',   'ी',   'ī',   'ี',    'ີ',   'ီ',    'ី',   'ী',   'ੀ',   'ᩦ',   'ી',   'ీ',   'ೀ',   'ീ',   '𑀻',    'ཱི',   '𑄩',   'ꦷ',   'ᬷ',   'ӣ'],
+    ['ු',   'ु',   'u',    'ุ',    'ຸ',   'ု',    'ុ',   'ু',   'ੁ',   'ᩩ',   'ુ',   'ు',   'ು',    'ു',   '𑀼',   'ུ',   '𑄪',   'ꦸ',    'ᬸ',   'у'],
+    ['ූ',   'ू',   'ū',    'ู',    'ູ',   'ူ',    'ូ',   'ূ',   'ੂ',   'ᩪ',   'ૂ',   'ూ',   'ೂ',   'ൂ',   '𑀽',   'ཱུ',   '𑄫',   'ꦹ',   'ᬹ',   'ӯ'],
+    ['ෙ',   'े',   'e',   'เ',   'ເ',   'ေ',   'េ',   'ে',  'ੇ',  'ᩮ',   'ે',   'ే',   'ೇ',    'േ',   '𑁂',   'ེ',   '𑄬',   'ꦺ',   'ᬾ',   'е'], //for th/lo - should appear in front
+    ['ො',   'ो',   'o',  'โ',   'ໂ',   'ော',   'ោ',  'ো',  'ੋ',  'ᩮᩣ',   'ો',  'ో',   'ೋ',  'ോ',   '𑁄',   'ོ',   '𑄮',   'ꦺꦴ',  'ᭀ',   'о'], //for th/lo - should appear in front
+    // for lana/java the o is two chars but it is ok to have them only on the right side of the conso
     // sanskrit dependant vowels
-    ['ෛ', 'ै', 'ai'],
-    ['ෞ', 'ौ', 'au'],
-    ['ෘ', 'ृ', 'ṛ'],
-    ['ෲ', 'ॄ', 'ṝ'],
-    ['ෟ', 'ॢ', 'l̥'], // roman changed since otherwise conflicting with ළ් ḷ 
-    ['ෳ', 'ॣ', 'ḹ'],
+    ['ෛ',   'ै',   'ai'],
+    ['ෞ',   'ौ',   'au'],
+    ['ෘ',   'ृ',   'ṛ'],
+    ['ෲ',   'ॄ',   'ṝ'],
+    ['ෟ',   'ॢ',   'l̥'], // roman changed since otherwise conflicting with ළ් ḷ 
+    ['ෳ',   'ॣ',   'ḹ']
 ];
 const sinh_conso_range = 'ක-ෆ';
 const thai_conso_range = 'ก-ฮ';
 const lao_conso_range = 'ກ-ຮ';
 const mymr_conso_range = 'က-ဠ';
+function format() { // helper function to format char arrays
+    console.log("[\n['" + consos.map((chars, i) => [...chars].join("',   '")).join("'],\n['") + "']\n];")
+}
+//format()
+
 
 function beautify_sinh(text, script, rendType = '') {
     // change joiners before U+0DBA Yayanna and U+0DBB Rayanna to Virama + ZWJ
@@ -284,9 +305,10 @@ const un_swap_e_o = (text, script) => {
 
 // in thai pali these two characters have special glyphs (using the encoding used in the THSarabunNew Font)
 const beautify_thai = (text, script) => {
-    text = text.replace(/\u0E34\u0E4D/g, '\u0E36'); // 'iṃ' has a single unicode in Thai
-    text = text.replace(/ญ/g, '\uF70F');
-    return text.replace(/ฐ/g, '\uF700');
+    return text // new buddhawajana font does not need special glyphs
+    // text = text.replace(/\u0E34\u0E4D/g, '\u0E36'); // 'iṃ' has a single unicode in Thai
+    // text = text.replace(/ญ/g, '\uF70F');
+    // return text.replace(/ฐ/g, '\uF700');
 };
 
 function un_beautify_thai(text, script) { 
@@ -295,6 +317,7 @@ function un_beautify_thai(text, script) {
     text = text.replace(/\uF70F/g, 'ญ');
     return text.replace(/\uF700/g, 'ฐ');
 }
+
 function un_beautify_khmer(text, script) {
     text = text.replace(/\u17B9/g, '\u17B7\u17C6'); // 'iṃ' has a single unicode in khmer which is split into two here
     return text.replace(/\u17D1/g, '\u17D2'); // end of word virama is different in khmer
@@ -311,11 +334,15 @@ function beautify_brahmi(text) { // just replace deva danda with brahmi danda
     text = text.replace(/॥/g,'𑁈');
     return text.replace(/–/g,'𑁋');
 }
-function beautify_tham(text) { // todo - unbeautify needed
+function beautify_lana(text) { // todo - unbeautify needed
+    // text = text.replace(/([ᨠ-ᩌ])ᩮᩣ/g, 'ᩮ$1ᩣ') // looks like not needed - font renders correctly
     text = text.replace(/\u1A60\u1A41/g, '\u1A55'); // medial ra - rakar
-    text = text.replace(/\u1A48\u1A60\u1A48/g,'\u1A54'); // great sa - ssa
-    text = text.replace(/।/g,'\u1AA8');
-    return text.replace(/॥/g,'\u1AA9');
+    text = text.replace(/\u1A48\u1A60\u1A48/g, '\u1A54'); // great sa - ssa
+    text = text.replace(/।/g, '\u1AA8');
+    return text.replace(/॥/g, '\u1AA9');
+}
+function un_beautify_lana(text) {
+    return text.replace(/ᩤ/g, 'ᩣ') // tall aa with normal a
 }
 
 function beautify_tibet(text) { // copied form csharp - consider removing subjoined as it makes it hard to read
@@ -356,7 +383,7 @@ const beautify_func = {
     [Script.LAOO]: [swap_e_o, beautify_common],
     [Script.MYMR]: [beautify_mymr, beautify_common],
     [Script.KHMR]: [beautify_common],
-    [Script.LANA]: [beautify_tham],
+    [Script.LANA]: [beautify_lana],
     [Script.GUJR]: [beautify_common],
     [Script.TELU]: [beautify_common],
     [Script.MLYM]: [beautify_common],
@@ -374,18 +401,25 @@ const un_beautify_func = {
     [Script.THAI]: [un_beautify_thai, un_swap_e_o],
     [Script.LAOO]: [un_swap_e_o],
     [Script.KHMR]: [un_beautify_khmer],
+    [Script.LANA]: [un_beautify_lana],
     [Script.MYMR]: [un_beautify_mymr],
     [Script.TIBT]: [un_beautify_tibet],
 }
 
-function prepareHashMaps(fromIndex, toIndex, useVowels = true) {
-    let fullAr = consos.concat(specials, useVowels ? vowels : []), finalAr = [[], [], []]; //max 3
-    fullAr.forEach(val => {
-        if (val[fromIndex]) { // empty mapping - e.g in roman
-            finalAr[val[fromIndex].length - 1].push([val[fromIndex], val[toIndex]]);
+const hashMapsCache = {to: {}, from: {}}
+function prepareHashMaps(direction, script, useVowels = true) { // not use vowels only when convert from latn/cyrl
+    if (hashMapsCache[direction][script]) {
+        return hashMapsCache[direction][script]
+    }
+    const fromIndex = direction === 'to' ? script_index[Script.SINH] : script_index[script],
+        toIndex = direction === 'to' ? script_index[script] : script_index[Script.SINH]
+    const combinedArrays = consos.concat(specials, useVowels ? vowels : []), mapsByLength = [[], [], []]; //max 3
+    combinedArrays.forEach(chars => {
+        if (chars[fromIndex]) { // empty '' from mapping - occurs in latn/cyrl
+            mapsByLength[chars[fromIndex].length - 1].push([chars[fromIndex], chars[toIndex]]);
         }
     });
-    return finalAr.filter(ar => ar.length).map(ar => [ar[0][0].length, new Map(ar)]).reverse(); // longest is first
+    return hashMapsCache[direction][script] = mapsByLength.filter(ar => ar.length).map(ar => [ar[0][0].length, new Map(ar)]).reverse(); // longest is first
 }
 
 const replaceByMaps = (inputText, hashMaps) => {
@@ -419,7 +453,7 @@ const replaceByMaps = (inputText, hashMaps) => {
 // cyrillic mapping extracted from https://dhamma.ru/scripts/transdisp.js - TODO capitalize cyrl too
 function insert_a(text, script) {
     const a = (script == Script.CYRL) ? '\u0430' : 'a'; // roman a or cyrl a
-    text = text.replace(new RegExp(`([ක-ෆ])([^\u0DCF-\u0DDF\u0DCA${a}])`, 'g'), `$1${a}$2`);
+    text = text.replace(new RegExp(`([ක-ෆ])([^\u0DCF-\u0DDF\u0DCA${a}])`, 'g'), `$1${a}$2`); // done twice to match successive consos
     text = text.replace(new RegExp(`([ක-ෆ])([^\u0DCF-\u0DDF\u0DCA${a}])`, 'g'), `$1${a}$2`);
     return text.replace(/([ක-ෆ])$/g, `$1${a}`); // conso at the end of string not matched by regex above
 }
@@ -434,30 +468,29 @@ function remove_a(text, script) {
 const fix_m_above = (text) => text.replace(/ṁ/g, 'ං'); // per ven anandajothi request
 
 const convert_to_func_default = [convert_to];
-const convert_to_func = {
-    [Script.SINH] : [],
+const convert_to_func = { // from sinh to another script
+    [Script.SINH] : [], // nothing to do since already sinh
     [Script.LATN] : [insert_a, convert_to],
     [Script.CYRL] : [insert_a, convert_to],
 }
 
 const convert_from_func_default = [convert_from];
-const convert_from_func = {
-    [Script.SINH] : [],
+const convert_from_func = { // from other script to sinh
+    [Script.SINH] : [], // nothing to do since already sinh
     [Script.LATN] : [convert_from_w_v, fix_m_above, remove_a],
     [Script.CYRL] : [convert_from_w_v, remove_a],
 }
 
 function convert_to(text, script) {
-    const hashMaps = prepareHashMaps(script_index[Script.SINH], script_index[script]);
+    const hashMaps = prepareHashMaps('to', script);
     return replaceByMaps(text, hashMaps);
 }
 function convert_from(text, script) {
-    const hashMaps = prepareHashMaps(script_index[script], script_index[Script.SINH]); // TODO create maps initially and reuse them
-    //console.log(hashMaps);
+    const hashMaps = prepareHashMaps('from', script);
     return replaceByMaps(text, hashMaps);
 }
 function convert_from_w_v(text, script) {
-    const hashMaps = prepareHashMaps(script_index[script], script_index[Script.SINH], false); // without vowels for roman
+    const hashMaps = prepareHashMaps('from', script, false); // without vowels for roman
     return replaceByMaps(text, hashMaps);
 }
 
@@ -469,13 +502,11 @@ function convert_from_w_v(text, script) {
 export class TextProcessor {
     // convert from sinhala to another script
     static basicConvert(text, script) {
-        if (script == Script.SINH) return text;
         (convert_to_func[script] || convert_to_func_default).forEach(func => text = func(text, script));
         return text;
     }
     // convert from another script to sinhala
     static basicConvertFrom(text, script) {
-        if (script == Script.SINH) return text;
         (convert_from_func[script] || convert_from_func_default).forEach(func => text = func(text, script));
         return text;
     }
@@ -582,29 +613,25 @@ export function checkUnconverted(text) {
  * const finalText = TextProcessor.convert(sinhText, Script.MY)
  */
 
-
-
-/*
-
-//const assert = require('assert');
-import assert from 'assert';
 function errorCheckMapping() {
-    const num_scripts = Object.keys(script_index).length;
+    const num_scripts = [3, 20]
     consos.concat(specials, vowels).forEach(ar => {
-        assert(ar.length == num_scripts, `${ar} length not ${num_scripts}`);
+        console.assert(num_scripts.includes(ar.length), `${ar} length not one of ${num_scripts}`);
         ar.forEach((ch, i) => {
             if (ch) {
-                const spt = getScriptForCode(ch.charCodeAt(0));
+                const charCode = ch.charCodeAt(0)
+                const script = Object.keys(script_index).find(s => script_index[s] === i); // find script for index
+                const ranges = PaliScriptInfo.get(script)[2] // ranges of the above script
                 // sinhala digits are in roman range - hence the isNan check
-                assert(script_index[spt] == i || !isNaN(ch), `char ${ch} code ${ch.charCodeAt(0)} not within the range for script ${spt}`);
+                console.assert(ranges.some(range => charCode >= range[0] && charCode <= range[1]) || !isNaN(ch), 
+                    `char ${ch} code ${charCode}: not within the range for script ${script}`);
             }
         });
-        const uniq = ar.filter((v, i, a) => a.indexOf(v) === i);
-        if (uniq.length != ar.length && isNaN(ar[0])) console.log(`duplicates in mapping: ${ar} : ${uniq}`);
+        const uniq = ar.filter((v, i, a) => a.indexOf(v) === i || v === '');
+        if (uniq.length != ar.length && isNaN(ar[0])) console.error(`duplicates in mapping: ${ar} : ${uniq}`);
     });
 }
 errorCheckMapping();
-*/
 
 
 /*
