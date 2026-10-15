@@ -406,6 +406,10 @@ const un_beautify_func = {
     [Script.TIBT]: [un_beautify_tibet],
 }
 
+// Pali has no diphthongs: in Roman Pali text 'ai' and 'au' are always two vowels (sa-uddesaṃ = සඋද්දෙසං, deva सउद्देसं)
+// so they are not read as the sanskrit diphthongs when converting from Roman (Sinhala/Devanagari ඓ ඖ ෛ ෞ still give ai/au)
+const romanDiphthongs = ['ai', 'au'];
+
 const hashMapsCache = {to: {}, from: {}}
 function prepareHashMaps(direction, script, useVowels = true) { // not use vowels only when convert from latn/cyrl
     if (hashMapsCache[direction][script]) {
@@ -415,9 +419,10 @@ function prepareHashMaps(direction, script, useVowels = true) { // not use vowel
         toIndex = direction === 'to' ? script_index[script] : script_index[Script.SINH]
     const combinedArrays = consos.concat(specials, useVowels ? vowels : []), mapsByLength = [[], [], []]; //max 3
     combinedArrays.forEach(chars => {
-        if (chars[fromIndex]) { // empty '' from mapping - occurs in latn/cyrl
-            mapsByLength[chars[fromIndex].length - 1].push([chars[fromIndex], chars[toIndex]]);
-        }
+        if (!chars[fromIndex]) return // empty '' from mapping - occurs in latn/cyrl
+        if (chars[toIndex] === undefined) return // no such letter in the target script (sanskrit letters) - left unconverted
+        if (direction === 'from' && script === Script.LATN && romanDiphthongs.includes(chars[fromIndex])) return
+        mapsByLength[chars[fromIndex].length - 1].push([chars[fromIndex], chars[toIndex]]);
     });
     return hashMapsCache[direction][script] = mapsByLength.filter(ar => ar.length).map(ar => [ar[0][0].length, new Map(ar)]).reverse(); // longest is first
 }

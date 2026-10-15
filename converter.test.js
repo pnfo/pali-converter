@@ -58,3 +58,47 @@ describe('checkUnconverted', () => {
         expect(checkUnconverted(convert('පස්දෙනෙක්', Script.LATN, Script.SINH))).toBeFalsy()
     })
 })
+
+describe('vowel pairs a+i, a+u', () => {
+    // pali has no diphthongs - roman 'ai' 'au' are two vowels, as written in the VRI devanagari text (सउद्देसं)
+    const words = 'sauddesaṃ naubhayabyābādhāya puttaiccādito',
+        expected = {
+            [Script.SINH]: 'සඋද්දෙසං නඋභයබ්‍යාබාධාය පුත්තඉච්චාදිතො',
+            [Script.DEVA]: 'सउद्देसं नउभयब्याबाधाय पुत्तइच्चादितो',
+            [Script.THAI]: 'สอุทฺเทสํ นอุภยพฺยาพาธาย ปุตฺตอิจฺจาทิโต',
+            [Script.MYMR]: 'သဥဒ္ဒေသံ နဥဘယဗျာဗာဓာယ ပုတ္တဣစ္စာဒိတော',
+            [Script.KHMR]: 'សឧទ្ទេសំ នឧភយព្យាពាធាយ បុត្តឥច្ចាទិតោ',
+        }
+    test('roman to other scripts', () => {
+        for (const [script, text] of Object.entries(expected)) {
+            expect(convert(words, script, Script.LATN)).toEqual(text)
+            expect(convertMixed(words, script)).toEqual(text)
+        }
+    })
+    test('round trip through roman', () => {
+        for (const [script, text] of Object.entries(expected)) {
+            expect(convert(convert(text, Script.LATN, script), script, Script.LATN)).toEqual(text)
+        }
+    })
+    test('at the start of a word', () => {
+        expect(convert('aiccā', Script.SINH, Script.LATN)).toEqual('අඉච්චා')
+        expect(convert('Auddhacca', Script.DEVA, Script.LATN)).toEqual('अउद्धच्च')
+    })
+    test('no "undefined" in any script', () => {
+        for (const script of Object.values(Script)) {
+            expect(convert(words, script, Script.LATN)).not.toMatch(/undefined/)
+        }
+    })
+    test('sanskrit diphthongs still convert to roman', () => {
+        expect(convert('කෛලාස', Script.LATN, Script.SINH)).toEqual('Kailāsa')
+        expect(convert('कौशल', Script.LATN, Script.DEVA)).toEqual('Kauśala')
+    })
+})
+
+describe('letters missing in the target script', () => {
+    test('are left unconverted, not "undefined"', () => {
+        const thai = convert('කෛලාස', Script.THAI, Script.SINH)
+        expect(thai).not.toMatch(/undefined/)
+        expect(checkUnconverted(thai)).toBeTruthy()
+    })
+})
