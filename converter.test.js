@@ -117,9 +117,10 @@ describe('script fixes (checked against the VRI editions and Myanmar printed Pal
         expect(convert('majjhima', Script.TIBT, Script.LATN).normalize('NFD')).toEqual('མ་ཛ྄ཛྷི་མ'.normalize('NFD')) // jjha: explicit halant
     })
     test('tamil letters with superscripts', () => {
-        expect(convert('dhammaṃ bhikkhave buddho', Script.TAML, Script.LATN)).toEqual('த⁴ம்மஂ பி⁴க்க²வே பு³த்³தோ⁴')
+        expect(convert('dhammaṃ bhikkhave buddho', Script.TAML, Script.LATN)).toEqual('த⁴ம்மம் பி⁴க்க²வே பு³த்³தோ⁴')
         expect(convert('dīghanikāyo vandana', Script.TAML, Script.LATN)).toEqual('தீ³க⁴னிகாயோ வந்த³ன')
-        expect(convertMixed('த⁴ம்மஂ', Script.LATN)).toEqual('Dhammaṃ')
+        expect(convertMixed('த⁴ம்மம்', Script.LATN)).toEqual('Dhammaṃ')
+        expect(convert('அம்ஹாகம் ஸம்பு³த்³த⁴', Script.LATN, Script.TAML)).toEqual('Amhākaṃ sambuddha')
     })
     test('converting back from tibetan, assamese, tai tham, chakma, tamil', () => {
         for (const s of [Script.TIBT, Script.ASSE, Script.LANA, Script.CAKM, Script.TAML, Script.MYMR])

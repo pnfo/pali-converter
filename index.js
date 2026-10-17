@@ -393,13 +393,15 @@ function un_beautify_assamese(text) { // reverse of beautify_assamese (ra ৰ, v
 }
 
 // Tamil has one letter for each row of stops (k kh g gh = க): the Pali convention marks the others with superscript
-// digits, placed after the syllable's vowel sign / virama / niggahita (த⁴ம்மஂ dhammaṃ, பி⁴க்க²வே bhikkhave, தா⁴ dhā)
+// digits, placed after the syllable's vowel sign / virama (த⁴ம்மம் dhammaṃ, பி⁴க்க²வே bhikkhave, தா⁴ dhā). niggahita is ம்
+// as usual in Tamil (the Tamil anusvara ஂ looks like the virama); back from Tamil ம் is m before ம ப ஹ (dhamma, sambuddha,
+// amhākaṃ), else ṃ
 const ML_TA = {
     'ക': 'க', 'ഖ': 'க²', 'ഗ': 'க³', 'ഘ': 'க⁴', 'ങ': 'ங', 'ച': 'ச', 'ഛ': 'ச²', 'ജ': 'ஜ', 'ഝ': 'ஜ²', 'ഞ': 'ஞ',
     'ട': 'ட', 'ഠ': 'ட²', 'ഡ': 'ட³', 'ഢ': 'ட⁴', 'ണ': 'ண', 'ത': 'த', 'ഥ': 'த²', 'ദ': 'த³', 'ധ': 'த⁴', 'ന': 'ந',
     'പ': 'ப', 'ഫ': 'ப²', 'ബ': 'ப³', 'ഭ': 'ப⁴', 'മ': 'ம', 'യ': 'ய', 'ര': 'ர', 'ല': 'ல', 'വ': 'வ', 'സ': 'ஸ', 'ഹ': 'ஹ', 'ള': 'ள',
     'അ': 'அ', 'ആ': 'ஆ', 'ഇ': 'இ', 'ഈ': 'ஈ', 'ഉ': 'உ', 'ഊ': 'ஊ', 'ഏ': 'ஏ', 'ഓ': 'ஓ',
-    'ാ': 'ா', 'ി': 'ி', 'ീ': 'ீ', 'ു': 'ு', 'ൂ': 'ூ', 'േ': 'ே', 'ോ': 'ோ', '്': '்', 'ം': 'ஂ', 'ഃ': 'ஃ',
+    'ാ': 'ா', 'ി': 'ி', 'ീ': 'ீ', 'ു': 'ு', 'ൂ': 'ூ', 'േ': 'ே', 'ോ': 'ோ', '്': '்', 'ം': 'ம்', 'ഃ': 'ஃ',
     '൦': '0', '൧': '1', '൨': '2', '൩': '3', '൪': '4', '൫': '5', '൬': '6', '൭': '7', '൮': '8', '൯': '9',
 }
 const TA_ML = Object.fromEntries(Object.entries(ML_TA).filter(([, t]) => !/^\d$/.test(t)).map(([m, t]) => [t, m]))
@@ -414,7 +416,8 @@ function beautify_tamil(text) {
 function un_beautify_tamil(text) {
     text = text.replace(/ன/g, 'ந')
     text = text.replace(/([\u0B95-\u0BB9])([\u0BBE-\u0BCD\u0B82]*)([²³⁴])/g, '$1$3$2') // superscript back to the letter
-    return text.replace(/[\u0B95-\u0BB9][²³⁴]|[\u0B80-\u0BFF]/g, c => TA_ML[c] ?? c)
+    text = text.replace(/ம்(?![மபஹ])/g, 'ம\u0B82') // niggahita
+    return text.replace(/\u0BAE\u0B82/g, 'ം').replace(/\u0B82/g, 'ം').replace(/[\u0B95-\u0BB9][²³⁴]|[\u0B80-\u0BFF]/g, c => TA_ML[c] ?? c)
 }
 
 const beautify_func_default = [];
