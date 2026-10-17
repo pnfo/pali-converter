@@ -102,3 +102,27 @@ describe('letters missing in the target script', () => {
         expect(checkUnconverted(thai)).toBeTruthy()
     })
 })
+
+describe('script fixes (checked against the VRI editions and Myanmar printed Pali)', () => {
+    const roundTrip = (w, s) => convert(convert(w, s, Script.LATN), Script.LATN, s).toLowerCase()
+    const words = ['brahmajālasuttaṃ', 'tassa', 'saṅgho', 'arahato', 'appā', 'bhikkhave', 'dhammaṃ', 'sīlakkhandhavaggapāḷi', 'paribbājakakathā', 'majjhimasīlaṃ']
+    test('myanmar tall aa after ပ္ပ ပ္ဖ ဂ္ဃ', () => {
+        expect(convert('appā', Script.MYMR, Script.LATN)).toEqual('အပ္ပါ')
+        expect(convert('papphāsa', Script.MYMR, Script.LATN)).toEqual('ပပ္ဖါသ')
+        expect(convert('agghā', Script.MYMR, Script.LATN)).toEqual('အဂ္ဃါ')
+        expect(convert('sikkhā sampā', Script.MYMR, Script.LATN)).toEqual('သိက္ခာ သမ္ပာ') // unchanged
+    })
+    test('tibetan tsheg between syllables', () => {
+        expect(convert('namo attanā', Script.TIBT, Script.LATN)).toEqual('ན་མོ ཨ་ཏྟ་ནཱ')
+        expect(convert('majjhima', Script.TIBT, Script.LATN).normalize('NFD')).toEqual('མ་ཛ྄ཛྷི་མ'.normalize('NFD')) // jjha: explicit halant
+    })
+    test('tamil letters with superscripts', () => {
+        expect(convert('dhammaṃ bhikkhave buddho', Script.TAML, Script.LATN)).toEqual('த⁴ம்மஂ பி⁴க்க²வே பு³த்³தோ⁴')
+        expect(convert('dīghanikāyo vandana', Script.TAML, Script.LATN)).toEqual('தீ³க⁴னிகாயோ வந்த³ன')
+        expect(convertMixed('த⁴ம்மஂ', Script.LATN)).toEqual('Dhammaṃ')
+    })
+    test('converting back from tibetan, assamese, tai tham, chakma, tamil', () => {
+        for (const s of [Script.TIBT, Script.ASSE, Script.LANA, Script.CAKM, Script.TAML, Script.MYMR])
+            for (const w of words) expect(roundTrip(w, s)).toEqual(w)
+    })
+})

@@ -1,6 +1,6 @@
 {
   "name": "@pnfo/pali-converter",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "convert pali content from one script to another",
   "main": "index.js",
   "type": "module",
