@@ -224,8 +224,10 @@ function beautify_mymr(text, script, rendType = '') { // new unicode 5.1 spec ht
     text = text.replace(/္ရ/g, 'ြ'); // rakar - yayit
     text = text.replace(/္ဝ/g, 'ွ'); // al + wa - wahswe
     text = text.replace(/္ဟ/g, 'ှ'); // al + ha - hahto
+    // the Sangha is written with niggahita (ဘိက္ခုသံဃေန, သံဃာ) in Myanmar Pali texts, saṅghāṭī saṅghāta etc. keep the kinzi
+    text = text.replace(/သင်္ဃ(?!ာ?[ဋတ]|ရ|ု)/g, 'သံဃ');
     // following code for tall aa is from https://www.facebook.com/pndaza.mlm
-    text = text.replace(/([ခဂငဒပဝ]ေ?)\u102c/g, "$1\u102b"); // aa to tall aa
+    text = text.replace(/((?:ဝှ|[ခဂငဒပဝ])ေ?)\u102c/g, "$1\u102b"); // aa to tall aa (also after ဝှ: ဇိဝှါ jivhā)
     text = text.replace(/(က္ခ|န္ဒ|မ္ပ)(ေ?)\u102b/g, "$1$2\u102c"); // restore back tall aa to aa for some pattern
     // tall aa also after these stacks (as in Myanmar printed Pali: ပ္ပါ ပ္ဖါ ဂ္ဃါ, the Tipitaka Pali-Myanmar Dictionary)
     return text.replace(/(ဒ္ဓ|ဒွ|ပ္ပ|ပ္ဖ|ဂ္ဃ)(ေ?)\u102c/g, "$1$2\u102b");
@@ -282,10 +284,14 @@ function capitalize(text, script) {
 }
 const un_capitalize = (text) => text.toLowerCase();
 // for thai text - this can also be done in the convert stage
+// in Thai Pali texts e / o go before a cluster whose second letter is ห ว ร ย น ล ม (not a double): เมฺห เทฺว เตฺร
+// (the Siam Rath edition), and before the last letter of the other clusters (ตฺโต นฺเต)
+const THAI_CLUSTER_E_O = /([ก-ฮ])ฺ([เโ])([หวรยนลม])/g
 const swap_e_o = (text, script) => {
     switch (script) {
         case Script.THAI:
-            return text.replace(/([ก-ฮ])([เโ])/g, '$2$1');
+            text = text.replace(/([ก-ฮ])([เโ])/g, '$2$1');
+            return text.replace(THAI_CLUSTER_E_O, (m, c1, v, c2) => (c1 === c2 ? m : `${v}${c1}ฺ${c2}`));
         case Script.LAOO:
             return text.replace(/([ກ-ຮ])([ເໂ])/g, '$2$1');
         default:
@@ -296,7 +302,8 @@ const swap_e_o = (text, script) => {
 const un_swap_e_o = (text, script) => {
     switch (script) {
         case Script.THAI:
-            return text.replace(/([เโ])([ก-ฮ])/g, '$2$1');
+            // one pass (a moved vowel is not moved again): before a cluster -> after it, else after the next letter
+            return text.replace(/([เโ])([ก-ฮ])(?:ฺ([หวรยนลม]))?/g, (m, v, c1, c2) => (c2 && c1 !== c2 ? `${c1}ฺ${c2}${v}` : `${c1}${v}${m.slice(2)}`));
         case Script.LAOO:
             return text.replace(/([ເໂ])([ກ-ຮ])/g, '$2$1');
         default:
@@ -306,8 +313,8 @@ const un_swap_e_o = (text, script) => {
 
 // in thai pali these two characters have special glyphs (using the encoding used in the THSarabunNew Font)
 const beautify_thai = (text, script) => {
-    return text // new buddhawajana font does not need special glyphs
-    // text = text.replace(/\u0E34\u0E4D/g, '\u0E36'); // 'iṃ' has a single unicode in Thai
+    // 'iṃ' is written with its own vowel ึ in Thai Pali texts (the Siam Rath edition: สทฺธึ, กึ - never ิํ)
+    return text.replace(/\u0E34\u0E4D/g, '\u0E36')
     // text = text.replace(/ญ/g, '\uF70F');
     // return text.replace(/ฐ/g, '\uF700');
 };

@@ -112,6 +112,16 @@ describe('script fixes (checked against the VRI editions and Myanmar printed Pal
         expect(convert('agghā', Script.MYMR, Script.LATN)).toEqual('အဂ္ဃါ')
         expect(convert('sikkhā sampā', Script.MYMR, Script.LATN)).toEqual('သိက္ခာ သမ္ပာ') // unchanged
     })
+    test('thai as in the Siam Rath edition: iṃ ึ, e/o before ห ว ร ย น ล ม clusters', () => {
+        expect(convert('saddhiṃ kiṃ', Script.THAI, Script.LATN)).toEqual('สทฺธึ กึ')
+        expect(convert('dve tumhe anveti tresu', Script.THAI, Script.LATN)).toEqual('เทฺว ตุเมฺห อเนฺวติ เตฺรสุ')
+        expect(convert('sallakkhetvā bhikkhave', Script.THAI, Script.LATN)).toEqual('สลฺลกฺเขตฺวา ภิกฺขเว') // unchanged
+        for (const w of ['dve', 'tumhe', 'anveti', 'tveva', 'tresu', 'saddhiṃ']) expect(roundTrip(w, Script.THAI)).toEqual(w)
+    })
+    test('myanmar as in Myanmar Pali texts: tall aa after ဝှ, the Sangha with niggahita', () => {
+        expect(convert('jivhā mantavho', Script.MYMR, Script.LATN)).toEqual('ဇိဝှါ မန္တဝှေါ')
+        expect(convert('bhikkhusaṅghena saṅghāṭiṃ saṅghātaṃ', Script.MYMR, Script.LATN)).toEqual('ဘိက္ခုသံဃေန သင်္ဃာဋိံ သင်္ဃာတံ')
+    })
     test('tibetan tsheg between syllables', () => {
         expect(convert('namo attanā', Script.TIBT, Script.LATN)).toEqual('ན་མོ ཨ་ཏྟ་ནཱ')
         expect(convert('majjhima', Script.TIBT, Script.LATN).normalize('NFD')).toEqual('མ་ཛ྄ཛྷི་མ'.normalize('NFD')) // jjha: explicit halant
