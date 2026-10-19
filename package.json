@@ -4,8 +4,17 @@
   "description": "convert pali content from one script to another",
   "main": "index.js",
   "type": "module",
+  "files": [
+    "index.js",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
+    "test:go": "go vet ./... && go test ./...",
+    "gen:go": "node scripts/gen-go.mjs",
+    "golden": "node scripts/gen-golden.mjs",
+    "bench": "cd bench && go run .",
     "publish": "npm publish --access public"
   },
   "repository": {

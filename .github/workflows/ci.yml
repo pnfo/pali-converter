@@ -1,0 +1,21 @@
+name: ci
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: npm }
+      - uses: actions/setup-go@v5
+        with: { go-version-file: go.mod }
+      - run: npm ci
+      - run: npm test
+      # the Go port: tables generated from index.js, then the outputs of index.js on a few books and random text
+      - run: node scripts/gen-go.mjs --check
+      - run: npm run golden
+      - run: go vet ./... && go test -v ./...
+        env: { CI: 1 }
